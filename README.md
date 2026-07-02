@@ -19,6 +19,7 @@ Table fields can be seen in model/Task.java .
 There are 5 enpoints with GET(2), POST, PUT, and DELETE : 
 
 GET : http://localhost:8080/api/tasks/        -> lists all tasks.
+
 GET : http://localhost:8080/api/tasks/{id}    -> lists a certain task according to given id.
 
 POST : http://localhost:8080/api/tasks	      -> saves a new task into the table with given body.
