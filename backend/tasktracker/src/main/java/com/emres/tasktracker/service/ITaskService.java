@@ -11,4 +11,7 @@ public interface ITaskService {
 
   public Task saveTask(Task task);
 
+  public Task updateTask(Integer id, Task taskDetails);
+
+  public Task deleteTask(Integer id);
 }
