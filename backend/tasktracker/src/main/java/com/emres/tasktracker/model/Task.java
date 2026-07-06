@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,5 +45,10 @@ public class Task {
   @Column(name = "task_status", nullable = false)
   @Enumerated(EnumType.STRING)
   private TaskStatus taskStatus;
+
+  @PrePersist
+  protected void onCreate() {
+    this.taskStartDate = LocalDate.now();
+  }
 
 }
