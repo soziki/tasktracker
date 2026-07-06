@@ -31,7 +31,7 @@ export default function TaskCard({ task, onEditClick, onDelete, onStatusChange }
       </div>
       <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-850 space-y-0.5">
         <p>👤 Sorumlu: <span className="text-slate-300">{task.taskAssignedPerson}</span></p>
-        <p>📅 Bitiş: <span className="text-slate-300">{new Date(task.taskDueDate).toLocaleDateString()}</span></p>
+        <p>📅 Bitiş: <span className="text-slate-300">{task.taskDueDate.substring(0,10)}</span></p>
       </div>
       <button 
         onClick={toggleStatus} 

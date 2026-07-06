@@ -41,7 +41,7 @@ export default function TaskFormModal({ isOpen, onClose, onSubmit, taskToEdit }:
       taskName,
       taskDescription,
       taskAssignedPerson,
-      taskDueDate: new Date(taskDueDate).toISOString(),
+      taskDueDate: taskDueDate,
       taskStatus,
     };
     onSubmit(taskData);
@@ -69,10 +69,28 @@ export default function TaskFormModal({ isOpen, onClose, onSubmit, taskToEdit }:
             <input type="text" required value={taskAssignedPerson} onChange={e => setAssignedTeam(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500" />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Bitiş Tarihi (Due Date)</label>
-              <input type="date" required value={taskDueDate} onChange={e => setDueDate(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500" />
-            </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
+              Bitiş Tarihi
+            </label>
+            <input 
+              type="text" 
+              required 
+              placeholder='YYYY-MM-DD'
+              pattern="\d{4}-\d{2}-\d{2}"
+              maxLength={10}
+              value={taskDueDate} 
+              onChange={e => {
+                // Simple auto-formatting helper: automatically adds hyphens while typing
+                let val = e.target.value.replace(/[^0-9-]/g, '');
+                if ((val.length === 4 || val.length === 7) && val.length > taskDueDate.length) {
+                  val += '-';
+                }
+                setDueDate(val);
+              }} 
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono text-sm" 
+            />
+          </div>
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Durum (Status)</label>
               <select value={taskStatus} onChange={e => setStatus(e.target.value as TaskStatus)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500">
