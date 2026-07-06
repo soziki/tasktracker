@@ -50,7 +50,6 @@ export default function KanbanBoard() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           {columns.map(col => {
-            // Filtrelemeyi yeni taskStatus alanına göre güncelledik
             const filteredTasks = tasks.filter(t => t.taskStatus === col.status);
             return (
               <div key={col.status} className={`border-t-4 ${col.color} bg-slate-900/20 border border-slate-850 rounded-xl p-4 min-h-[450px] flex flex-col space-y-3`}>

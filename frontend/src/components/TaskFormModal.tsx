@@ -5,7 +5,7 @@ interface TaskFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (task: Task) => void;
-  taskToEdit?: Task; // Düzenleme modundaysa getTaskById'den gelen veri buraya düşer
+  taskToEdit?: Task; 
 }
 
 export default function TaskFormModal({ isOpen, onClose, onSubmit, taskToEdit }: TaskFormModalProps) {
@@ -36,7 +36,6 @@ export default function TaskFormModal({ isOpen, onClose, onSubmit, taskToEdit }:
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const taskData: Task = {
-      // Güncelleme modundaysa id ve start date (createdAt) bilgilerini koruyoruz, değiştirilemez!
       ...(taskToEdit && { id: taskToEdit.id, taskStartDate: taskToEdit.taskStartDate }),
       taskName,
       taskDescription,
@@ -81,7 +80,6 @@ export default function TaskFormModal({ isOpen, onClose, onSubmit, taskToEdit }:
               maxLength={10}
               value={taskDueDate} 
               onChange={e => {
-                // Simple auto-formatting helper: automatically adds hyphens while typing
                 let val = e.target.value.replace(/[^0-9-]/g, '');
                 if ((val.length === 4 || val.length === 7) && val.length > taskDueDate.length) {
                   val += '-';
