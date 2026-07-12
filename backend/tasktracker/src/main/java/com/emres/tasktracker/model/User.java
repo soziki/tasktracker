@@ -32,7 +32,7 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "user_name", nullable = false)
+  @Column(name = "user_name", nullable = false, unique = true)
   private String username;
 
   @Column(name = "user_password", nullable = false)
