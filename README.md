@@ -14,12 +14,12 @@ docker exec -it task-postgres psql -U taskuser -d taskdb
 
 To run the app, use these in different terminals : 
 
-cd backend/tasktracker
+cd backend/tasktracker \
 mvn spring-boot:run 
 
 and 
 
-cd frontend/
+cd frontend/ \
 npm run dev
 
 
