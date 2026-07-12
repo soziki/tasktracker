@@ -1,8 +1,6 @@
 package com.emres.tasktracker.jwt;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
@@ -10,7 +8,6 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.emres.tasktracker.enums.UserRole;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -29,7 +26,7 @@ public class JwtService {
     return Jwts.builder()
     .subject(userDetails.getUsername())
     .issuedAt(new Date())
-    .expiration(new Date(System.currentTimeMillis() + 1000 * 10))
+    .expiration(new Date(System.currentTimeMillis() + 1000 * 60))
     .signWith(getKey(), Jwts.SIG.HS256)
     // .claims().add(claimsMap).and()
     .compact();
