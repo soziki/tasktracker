@@ -7,6 +7,9 @@ import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.scripting.support.RefreshableScriptTargetSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.emres.tasktracker.config.AppConfig;
 import com.emres.tasktracker.dto.DtoUser;
@@ -64,11 +68,19 @@ public class AuthServiceImpl implements IAuthService{
     newUser.setUserPassword(passwordEncoder.encode(request.getPassword()));
     newUser.setUserRole(UserRole.USER);
     
-    User savedUser = userRepository.save(newUser);
-    DtoUser dto = new DtoUser();
+    try {
+      User savedUser = userRepository.save(newUser);
+      DtoUser dto = new DtoUser();
 
-    BeanUtils.copyProperties(savedUser, dto);
-    return dto;
+      BeanUtils.copyProperties(savedUser, dto);
+      return dto;
+    } catch (DataIntegrityViolationException e) {
+      // TODO: handle exception
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists.");
+    } catch (Exception e) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
+    } 
+
   }
 
   @Override
