@@ -1,70 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { authApi } from '../api/authApi';
-import { setUnauthorizedHandler, TOKEN_STORAGE_KEY } from '../api/axiosInstance';
+import keycloak from '../keycloak';
 import { AuthContext } from './AuthContext';
 
+// Keycloak instances can only be init()'d once. React StrictMode double-invokes
+// effects in dev, so guard with a module-level flag rather than relying on the
+// effect only running once per mount.
+let initStarted = false;
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_STORAGE_KEY));
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    setUnauthorizedHandler(() => setToken(null));
+    if (initStarted) return;
+    initStarted = true;
+
+    keycloak.onAuthLogout = () => setAuthenticated(false);
+    keycloak.onTokenExpired = () => {
+      keycloak.updateToken(30).catch(() => keycloak.login());
+    };
+
+    keycloak
+      .init({ onLoad: 'check-sso', pkceMethod: 'S256' })
+      .then((isAuthenticated) => {
+        setAuthenticated(isAuthenticated);
+        setInitialized(true);
+      })
+      .catch(() => {
+        setInitialized(true);
+      });
   }, []);
 
-  const login = async (username: string, password: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await authApi.login({ username, password });
-      if (!response?.token) {
-        // Backend currently returns 200 with an empty body on bad credentials
-        // instead of a 401, so a missing token also means "login failed".
-        throw new Error('Invalid username or password.');
-      }
-      localStorage.setItem(TOKEN_STORAGE_KEY, response.token);
-      setToken(response.token);
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.status === 401 ? 'Invalid username or password.' : err.message);
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred while logging in.');
-      }
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const register = async (username: string, password: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await authApi.register({ username, password });
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.status === 409 ? 'Username already taken.' : err.message);
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred while registering.');
-      }
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
-    setToken(null);
-  };
+  const login = () => keycloak.login();
+  const register = () => keycloak.register();
+  const logout = () => keycloak.logout({ redirectUri: window.location.origin });
 
   return (
-    <AuthContext.Provider value={{ token, loading, error, login, register, logout }}>
+    <AuthContext.Provider value={{ authenticated, initialized, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -72,7 +72,11 @@ function AuthGate() {
   const authContext = useContext(AuthContext);
   if (!authContext) return null;
 
-  if (!authContext.token) {
+  if (!authContext.initialized) {
+    return null;
+  }
+
+  if (!authContext.authenticated) {
     return <LoginForm />;
   }
 
