@@ -4,7 +4,7 @@
 
 In this branch, keycloak services added to app. These are login, logout, register, role-based permission and user storage.
 
-To run this version, addition to the legacy testtracker, run : 
+To run this version, addition to the legacy tasktracker, run : 
 
 docker run -p 127.0.0.1:8081:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.7.0 start-dev
 
