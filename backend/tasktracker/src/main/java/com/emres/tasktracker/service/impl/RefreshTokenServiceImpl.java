@@ -51,12 +51,10 @@ public class RefreshTokenServiceImpl implements IRefreshTokenService{
         System.out.println("Refresh token has been expired.");
       }
 
-      
     } else {
-      //invalid
       System.out.println("Invalid refresh token." + request.getRefreshToken());
-
     }
+    
     return null;
   }
 

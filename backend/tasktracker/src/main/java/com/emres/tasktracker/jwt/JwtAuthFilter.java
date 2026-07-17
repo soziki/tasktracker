@@ -55,7 +55,6 @@ public class JwtAuthFilter extends OncePerRequestFilter{
           }
         }
       } catch (ExpiredJwtException e) {
-        // TODO: handle exception
         System.out.println("Token has been expired: " + e.getMessage());
 
       } catch (Exception e) {

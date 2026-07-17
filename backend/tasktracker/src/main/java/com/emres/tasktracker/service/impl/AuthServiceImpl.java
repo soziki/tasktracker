@@ -6,21 +6,17 @@ import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.scripting.support.RefreshableScriptTargetSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.emres.tasktracker.config.AppConfig;
 import com.emres.tasktracker.dto.DtoUser;
 import com.emres.tasktracker.enums.UserRole;
 import com.emres.tasktracker.jwt.AuthRequest;
@@ -56,7 +52,7 @@ public class AuthServiceImpl implements IAuthService{
   public RefreshToken createRefreshToken(User user){
     RefreshToken refreshToken = new RefreshToken();
     refreshToken.setRefreshToken(UUID.randomUUID().toString());
-    refreshToken.setExpireDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2));
+    refreshToken.setExpireDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 4));
     refreshToken.setUser(user);
     return refreshToken;
   }
@@ -74,9 +70,10 @@ public class AuthServiceImpl implements IAuthService{
 
       BeanUtils.copyProperties(savedUser, dto);
       return dto;
+
     } catch (DataIntegrityViolationException e) {
-      // TODO: handle exception
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists.");
+
     } catch (Exception e) {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
     } 
@@ -100,10 +97,11 @@ public class AuthServiceImpl implements IAuthService{
       refreshTokenRepository.save(refreshToken);
       return new AuthResponse(token, refreshToken.getRefreshToken());
 
+    } catch (AuthenticationException e) { // exception refactor
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed", e.getCause());
+
     } catch (Exception e) {
-        System.out.println("[INFO] Wrong username or password.");
-        //return new AuthResponse("[ERROR] Token can not be generated.");
-        return null;
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong", e.getCause());
     }
   }
 }
