@@ -10,9 +10,19 @@ export const taskApi = {
     return response.data;
   },
 
+  getMyTasks: async (): Promise<Task[]> => {
+    const response = await apiClient.get<Task[]>(`${API_BASE_URL}/usr`);
+    return response.data;
+  },
+
 
   getTaskById: async (id: number): Promise<Task> => {
     const response = await apiClient.get<Task>(`${API_BASE_URL}/${id}`);
+    return response.data;
+  },
+
+  getMyTaskById: async (id: number): Promise<Task> => {
+    const response = await apiClient.get<Task>(`${API_BASE_URL}/usr/${id}`);
     return response.data;
   },
 

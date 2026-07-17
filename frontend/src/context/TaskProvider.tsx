@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import type { Task } from '../types/Task';
 import { taskApi } from '../api/api';
 import { TaskContext } from './TaskContext';
+import { AuthContext } from './AuthContext';
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
+  const authContext = useContext(AuthContext);
+  const canManage = (authContext?.hasRole('client_admin') ?? false) || (authContext?.hasRole('client_manager') ?? false);
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +17,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const data = await taskApi.getAllTasks();
+      const data = canManage ? await taskApi.getAllTasks() : await taskApi.getMyTasks();
       setTasks(data);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -34,7 +38,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     const loadInitialData = async () => {
       setLoading(true);
       try {
-        const data = await taskApi.getAllTasks();
+        const data = canManage ? await taskApi.getAllTasks() : await taskApi.getMyTasks();
         if (isMounted) setTasks(data);
       } catch (err: unknown) {
         if (isMounted) {
@@ -50,7 +54,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [canManage]);
 
   const createTask = async (newTask: Task) => {
     setLoading(true);
@@ -106,11 +110,13 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const foundTask = await taskApi.getTaskById(numericId);
+      const foundTask = canManage
+        ? await taskApi.getTaskById(numericId)
+        : await taskApi.getMyTaskById(numericId);
       setTasks(foundTask ? [foundTask] : []);
     } catch (err: unknown) {
       setTasks([]);
-      if (axios.isAxiosError(err) && err.response?.status !== 404) {
+      if (axios.isAxiosError(err) && err.response?.status !== 404 && err.response?.status !== 403) {
         setError(err.message);
       }
     } finally {

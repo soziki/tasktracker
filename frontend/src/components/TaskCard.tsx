@@ -4,6 +4,7 @@ interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
   onDelete: (id: number) => void;
+  canManage: boolean;
 }
 
 const statusStyles: Record<Task['taskStatus'], string> = {
@@ -16,7 +17,7 @@ const statusLabels: Record<Task['taskStatus'], string> = {
   PAUSED: 'Paused',
 };
 
-export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onEdit, onDelete, canManage }: TaskCardProps) {
   return (
     <div className="border border-gray-200 rounded-lg p-4 flex flex-col gap-2 bg-white shadow-sm">
       <div className="flex items-start justify-between gap-2">
@@ -37,20 +38,22 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
         <span>Due: <strong className="text-gray-700">{task.taskDueDate}</strong></span>
       </div>
 
-      <div className="flex gap-2 mt-1">
-        <button
-          onClick={() => onEdit(task)}
-          className="px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 rounded hover:bg-blue-100"
-        >
-          Update
-        </button>
-        <button
-          onClick={() => task.id !== undefined && onDelete(task.id)}
-          className="px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 rounded hover:bg-red-100"
-        >
-          Delete
-        </button>
-      </div>
+      {canManage && (
+        <div className="flex gap-2 mt-1">
+          <button
+            onClick={() => onEdit(task)}
+            className="px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 rounded hover:bg-blue-100"
+          >
+            Update
+          </button>
+          <button
+            onClick={() => task.id !== undefined && onDelete(task.id)}
+            className="px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 rounded hover:bg-red-100"
+          >
+            Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,9 +5,10 @@ import type { Task } from '../types/Task';
 
 interface TaskListProps {
   onEdit: (task: Task) => void;
+  canManage: boolean;
 }
 
-export function TaskList({ onEdit }: TaskListProps) {
+export function TaskList({ onEdit, canManage }: TaskListProps) {
   const context = useContext(TaskContext);
   if (!context) return null;
 
@@ -23,7 +24,7 @@ export function TaskList({ onEdit }: TaskListProps) {
 
       <div className="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-1">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onEdit={onEdit} onDelete={deleteTask} />
+          <TaskCard key={task.id} task={task} onEdit={onEdit} onDelete={deleteTask} canManage={canManage} />
         ))}
       </div>
     </div>

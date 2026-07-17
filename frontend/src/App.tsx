@@ -16,7 +16,8 @@ function TaskTrackerPage() {
 
   if (!taskContext || !authContext) return null;
   const { createTask, updateTask } = taskContext;
-  const { logout } = authContext;
+  const { logout, hasRole } = authContext;
+  const canManage = hasRole('client_admin') || hasRole('client_manager');
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -33,17 +34,21 @@ function TaskTrackerPage() {
 
         <hr className="my-5 border-t border-gray-200" />
 
-        <div className="mb-8">
-          <TaskForm submitLabel="Add Task" onSubmit={createTask} />
-        </div>
+        {canManage && (
+          <>
+            <div className="mb-8">
+              <TaskForm submitLabel="Add Task" onSubmit={createTask} />
+            </div>
 
-        <hr className="my-5 border-t border-gray-200" />
+            <hr className="my-5 border-t border-gray-200" />
+          </>
+        )}
 
         <div className="mb-5">
           <SearchBar />
         </div>
 
-        <TaskList onEdit={setEditingTask} />
+        <TaskList onEdit={setEditingTask} canManage={canManage} />
 
         {editingTask && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
