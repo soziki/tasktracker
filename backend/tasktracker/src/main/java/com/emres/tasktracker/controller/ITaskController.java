@@ -8,6 +8,10 @@ public interface ITaskController {
   //methods
   public List<Task> getAllTasks(); 
 
+  public List<Task> getTasksByKeycloakUsername();
+
+  public Task getUserTaskById(Integer id);
+
   public Task getTaskById(Integer id); 
 
   public Task saveTask(Task task);
