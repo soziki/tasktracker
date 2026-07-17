@@ -4,7 +4,7 @@
 
 In this branch, keycloak services added to app. These are login, logout, register, role-based permission and user storage.
 
--> To run this version, addition to the legacy testtracker, run : 
+To run this version, addition to the legacy tasktracker, run : 
 
 docker run -p 127.0.0.1:8081:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.7.0 start-dev
 
@@ -20,6 +20,9 @@ The previous /login, /register, /refresh are discarded since these are now handl
 Following apis are added : 
 
 GET : http://localhost:8080/api/tasks/usr       ->  Lists the task assigned to callee user. 
+
 GET : http://localhost:8080/api/tasks/usr/{id}  ->  Returns the task assigned to callee user with given id.
 
-These two apis can be called by only user roles. Rest can be called by both admin and manager roles. The different between admin and manager is about account management. Admin and manager have similar rights about task management but account management (role assignments etc.) can be done by admin via keycloak - this is the scenario. 
+These two apis can be called by only user roles. Rest can be called by both admin and manager roles. The different between admin and manager is about account management. Admin and manager have similar rights about task management but account management (role assignments etc.) can be done by admin via keycloak - this is the scenario.
+
+For further instructions about keycloak, visit https://www.keycloak.org/guides#getting-started 
