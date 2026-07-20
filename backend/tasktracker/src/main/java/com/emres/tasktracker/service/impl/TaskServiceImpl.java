@@ -5,6 +5,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.emres.tasktracker.exception.ForbiddenException;
+import com.emres.tasktracker.exception.ResourceNotFoundException;
 import com.emres.tasktracker.model.Task;
 import com.emres.tasktracker.repository.TaskRepository;
 import com.emres.tasktracker.service.ITaskService;
@@ -25,18 +27,18 @@ public class TaskServiceImpl implements ITaskService {
   }
 
   @Override
-  public Task getUserTaskById(Integer id, String username) {
-    Task task = taskRepository.findById(id).orElse(null);
-    if (task == null || !task.getTaskAssignedPerson().equalsIgnoreCase(username)) {
-      return null;
+  public Task getUserTaskById(Integer id, String username) { //handled
+    Task task = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("task " + id + " not found"));
+    if (!task.getTaskAssignedPerson().equalsIgnoreCase(username)) {
+      throw new ForbiddenException("no access");
     }
     return task;
   }
 
 
   @Override
-  public Task getTaskById(Integer id) {
-    return taskRepository.findById(id).orElse(null);
+  public Task getTaskById(Integer id) { //
+    return taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("task " + id + " not found"));
   }
 
   @Override
@@ -45,15 +47,15 @@ public class TaskServiceImpl implements ITaskService {
   }
 
   @Override
-  public Task updateTask(Integer id, Task taskDetails) {
-    Task taskToBeUpdated = taskRepository.findById(id).orElse(null);
+  public Task updateTask(Integer id, Task taskDetails) { //handled
+    Task taskToBeUpdated = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("task " + id + " not found"));
     BeanUtils.copyProperties(taskDetails, taskToBeUpdated, "id", "taskStartDate");
     return taskRepository.save(taskToBeUpdated);
   }
 
   @Override
-  public Task deleteTask(Integer id) {
-    Task taskToBeDeleted = taskRepository.findById(id).orElse(null);
+  public Task deleteTask(Integer id) { //handled
+    Task taskToBeDeleted = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("task " + id + " not found"));
     taskRepository.deleteById(id);
     return taskToBeDeleted;
   }

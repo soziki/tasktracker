@@ -46,13 +46,9 @@ public class TaskControllerImpl implements ITaskController {
   @GetMapping("/usr/{id}")
   @Override
   @PreAuthorize("hasRole('client_user')")
-  public Task getUserTaskById(@PathVariable(name = "id") Integer id) {
+  public Task getUserTaskById(@PathVariable(name = "id") Integer id) { //handled
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    Task task = taskService.getUserTaskById(id, username);
-    if (task == null) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-    }
-    return task;
+    return taskService.getUserTaskById(id, username);
   }
 
   @GetMapping("/{id}")
