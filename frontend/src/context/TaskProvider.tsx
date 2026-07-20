@@ -63,7 +63,13 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       const created = await taskApi.createTask(newTask);
       setTasks((prev) => [...prev, created]);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Görev eklenirken bir hata oluştu.');
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || err.message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Görev eklenirken bir hata oluştu.');
+      }
     } finally {
       setLoading(false);
     }
@@ -76,7 +82,13 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       const updated = await taskApi.updateTask(id, updatedFields);
       setTasks((prev) => prev.map((task) => (task.id === id ? updated : task)));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Görev güncellenirken bir hata oluştu.');
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || err.message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Görev güncellenirken bir hata oluştu.');
+      }
     } finally {
       setLoading(false);
     }
@@ -89,7 +101,13 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       await taskApi.deleteTask(id);
       setTasks((prev) => prev.filter((task) => task.id !== id));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Görev silinirken bir hata oluştu.');
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || err.message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Görev silinirken bir hata oluştu.');
+      }
     } finally {
       setLoading(false);
     }
