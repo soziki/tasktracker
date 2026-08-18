@@ -1,0 +1,47 @@
+services:
+  postgres_server:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=taskdb
+      - POSTGRES_USER=taskuser
+      - POSTGRES_PASSWORD=taskpass
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskuser -d taskdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  
+  backend_server:
+    image: backend
+    build: ./backend/tasktracker
+    container_name: backend
+    depends_on:
+      postgres_server:
+        condition: service_healthy
+    environment:
+      - DB_HOST=postgres_server:5432
+      - DB_SCHEMA=taskdb
+      - DB_USER=taskuser
+      - DB_PASSWORD=taskpass
+    ports:
+      - "8080:8080"
+  
+  frontend_server:
+    image: frontend
+    build: ./frontend
+    container_name: frontend
+    depends_on:
+      - backend_server
+    environment:
+      - VITE_API_TARGET=http://backend_server:8080
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:  
+
