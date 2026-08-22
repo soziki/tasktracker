@@ -37,12 +37,19 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     
     const loadInitialData = async () => {
       setLoading(true);
+      setError(null);
       try {
         const data = canManage ? await taskApi.getAllTasks() : await taskApi.getMyTasks();
         if (isMounted) setTasks(data);
       } catch (err: unknown) {
         if (isMounted) {
-          setError(err instanceof Error ? err.message : 'Yükleme hatası');
+          if (axios.isAxiosError(err)) {
+            setError(err.response?.data?.message || err.message);
+          } else if (err instanceof Error) {
+            setError(err.message);
+          } else {
+            setError('Yükleme hatası');
+          }
         }
       } finally {
         if (isMounted) setLoading(false);
