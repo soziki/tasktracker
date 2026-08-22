@@ -22,9 +22,19 @@ Then you shall see the some files added, some discarded.
 In the legacy version, we used to have a users table in posgres. We used to keep the hashed version of the passwords and generate tokens after comparisons over hashed values. In this version, we don't do that, Keyvcloak manages the users instead of us. You can think the Keycloak as a shell covers our client app and manages the login/logout/register authentication of users. 
 ##
 ### Run / Stop
-Same with the main branch. 
+Same with the main branch, but at **each** branch change you should run the compose command with **--build** once. Simply, 
 
-But if you want to add new users to the system (register), you should assign roles to them, otherwise you can see an error status code in the screen because authorization will be failed. 
+```sh
+$ git checkout keycloak-exp
+$ docker compose up --build # first run
+# you are doing crud, compose down/up several times..
+$ git checkout main # careful!
+$ docker compose up --build # first run
+# you are doing crud, compose down/up several times..
+.. 
+```
+
+If you want to add new users to the system (register), you should assign roles to them, otherwise you can see an error status code in the screen because authorization will be failed. 
 
 You can manage this by opening the Keycloak Admin Dashboard. Since the Keycloak Server will run on your localhost:8081, http://localhost:8081 will route you the login screen. You can use : 
 
