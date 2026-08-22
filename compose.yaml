@@ -16,7 +16,7 @@ services:
       timeout: 5s
       retries: 10
   
-  backend_server:
+  backend:
     image: backend
     build: ./backend/tasktracker
     container_name: backend
@@ -30,15 +30,15 @@ services:
       - DB_PASSWORD=taskpass
     ports:
       - "8080:8080"
-  
+
   frontend_server:
     image: frontend
     build: ./frontend
     container_name: frontend
     depends_on:
-      - backend_server
+      - backend
     environment:
-      - VITE_API_TARGET=http://backend_server:8080
+      - VITE_API_TARGET=http://backend:8080
     ports:
       - "5173:5173"
 
