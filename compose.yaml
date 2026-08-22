@@ -1,3 +1,4 @@
+name: tasktracker-main
 services:
   postgres_server:
     image: postgres:15
